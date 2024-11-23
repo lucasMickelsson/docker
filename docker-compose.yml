@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/my-app:delegated
+      - /my-app/node_modules
+    ports:
+      - 3000:3000
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    stdin_open: true # Keep STDIN open for hot reload
+
+  directus:
+    image: directus/directus:11.2.1
+    ports:
+      - 8055:8055
+    volumes:
+      - ./database:/directus/database
+      - ./uploads:/directus/uploads
+      - ./extensions:/directus/extensions
+    environment:
+      SECRET: "replace-with-secure-random-value" # Replace with a secure, random value
+      ADMIN_EMAIL: "admin@example.com" # Administrator email for the Directus setup
+      ADMIN_PASSWORD: "d1r3ctu5" # Administrator password
+      DB_CLIENT: "sqlite3" # Using SQLite as the database
+      DB_FILENAME: "/directus/database/data.db" # Path to the SQLite database file
+      WEBSOCKETS_ENABLED: "true" # Enable WebSocket support
+    restart: always
